@@ -39,6 +39,10 @@ spec:
           value: {{ .Values.config.port | quote }}
         - name: NODE_ENV
           value: "production"
+        - name: METRICS_ENABLED
+          value: {{ .Values.config.metricsEnabled | quote }}
+        - name: METRICS_PORT
+          value: {{ .Values.config.metricsPort | quote }}
 
         # Database URL (from PostgreSQL subchart or external)
         - name: DATABASE_URL

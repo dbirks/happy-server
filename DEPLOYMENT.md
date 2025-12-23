@@ -136,12 +136,33 @@ spec:
     #       name: happy-server-external-db
 ```
 
-**3. Create secrets:**
+**3. Create required secrets:**
 ```bash
-# For S3, API keys, etc.
+# Generate a secure master secret
+MASTER_SECRET=$(openssl rand -base64 32)
+
+# Create the secret with all required values
 kubectl create secret generic happy-server-secrets \
-  --from-literal=S3_ACCESS_KEY=xxx \
-  --from-literal=S3_SECRET_KEY=xxx \
+  --from-literal=HANDY_MASTER_SECRET="$MASTER_SECRET" \
+  --from-literal=S3_HOST=s3.amazonaws.com \
+  --from-literal=S3_PORT=443 \
+  --from-literal=S3_USE_SSL=true \
+  --from-literal=S3_ACCESS_KEY=your-access-key \
+  --from-literal=S3_SECRET_KEY=your-secret-key \
+  --from-literal=S3_BUCKET=happy-server-uploads \
+  --from-literal=S3_PUBLIC_URL=https://s3.amazonaws.com/happy-server-uploads \
+  -n default
+
+# Or for MinIO (self-hosted S3):
+kubectl create secret generic happy-server-secrets \
+  --from-literal=HANDY_MASTER_SECRET="$MASTER_SECRET" \
+  --from-literal=S3_HOST=minio.example.com \
+  --from-literal=S3_PORT=9000 \
+  --from-literal=S3_USE_SSL=false \
+  --from-literal=S3_ACCESS_KEY=minioadmin \
+  --from-literal=S3_SECRET_KEY=minioadmin \
+  --from-literal=S3_BUCKET=happy \
+  --from-literal=S3_PUBLIC_URL=http://minio.example.com:9000/happy \
   -n default
 ```
 
