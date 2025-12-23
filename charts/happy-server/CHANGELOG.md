@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.1...happy-server-chart-v0.1.2) (2025-12-23)
+
+
+### Bug Fixes
+
+* **chart:** use Kubernetes native variable substitution for connection strings ([898a60f](https://github.com/dbirks/happy-server/commit/898a60f53b8e4da23dc508d5be5f9a3e9ee6f886))
+
 ## [0.1.1](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.0...happy-server-chart-v0.1.1) (2025-12-23)
 
 
