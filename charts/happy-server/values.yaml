@@ -98,19 +98,16 @@ config:
   metricsPort: "9090"
 
 # -- Environment variables from secrets
+# HANDY_MASTER_SECRET is auto-generated on first install and persists across upgrades
 # MinIO is enabled by default and provides S3-compatible storage
-# If using external S3 instead, set minio.enabled=false and create a secret with:
-#   HANDY_MASTER_SECRET: Encryption key for secure operations (REQUIRED)
-#   S3_HOST: S3-compatible storage host (e.g., s3.amazonaws.com)
-#   S3_PORT: S3 port (default: 443 for AWS)
-#   S3_USE_SSL: "true" or "false"
-#   S3_ACCESS_KEY: S3 access key
-#   S3_SECRET_KEY: S3 secret key
-#   S3_BUCKET: S3 bucket name
-#   S3_PUBLIC_URL: Public URL for S3 bucket
-envFrom:
-  - secretRef:
-      name: happy-server-secrets  # Create with at minimum: HANDY_MASTER_SECRET
+#
+# For external S3: set minio.enabled=false and add these to the auto-generated secret:
+#   S3_HOST, S3_PORT, S3_USE_SSL, S3_ACCESS_KEY, S3_SECRET_KEY, S3_BUCKET, S3_PUBLIC_URL
+#
+# Additional secrets can be provided via envFrom (optional)
+envFrom: []
+  # - secretRef:
+  #     name: additional-secrets  # For 11Labs API keys, etc.
 
 # ============================================================================
 # PostgreSQL dependency configuration (Bitnami chart with DHI image override)

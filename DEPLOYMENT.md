@@ -138,26 +138,25 @@ spec:
     #       name: happy-server-external-db
 ```
 
-**3. Create required secrets:**
+**3. Secrets (auto-generated!):**
+
+The Helm chart automatically generates `HANDY_MASTER_SECRET` on first install and persists it across upgrades. **No manual secret creation needed!**
+
+If using external S3 (set `minio.enabled=false`), add S3 credentials to the auto-generated secret:
 ```bash
-# MinIO is enabled by default, so you only need HANDY_MASTER_SECRET
-MASTER_SECRET=$(openssl rand -base64 32)
+# Get the auto-generated secret name
+SECRET_NAME=$(kubectl get secret -n default -l app.kubernetes.io/name=happy-server -o name | grep secrets)
 
-kubectl create secret generic happy-server-secrets \
-  --from-literal=HANDY_MASTER_SECRET="$MASTER_SECRET" \
-  -n default
-
-# Or if using external S3 instead (set minio.enabled=false):
-kubectl create secret generic happy-server-secrets \
-  --from-literal=HANDY_MASTER_SECRET="$MASTER_SECRET" \
-  --from-literal=S3_HOST=s3.amazonaws.com \
-  --from-literal=S3_PORT=443 \
-  --from-literal=S3_USE_SSL=true \
-  --from-literal=S3_ACCESS_KEY=your-access-key \
-  --from-literal=S3_SECRET_KEY=your-secret-key \
-  --from-literal=S3_BUCKET=happy-server-uploads \
-  --from-literal=S3_PUBLIC_URL=https://s3.amazonaws.com/happy-server-uploads \
-  -n default
+# Patch with external S3 credentials
+kubectl patch $SECRET_NAME -n default --type='json' -p='[
+  {"op": "add", "path": "/data/S3_HOST", "value": "'$(echo -n "s3.amazonaws.com" | base64)'"},
+  {"op": "add", "path": "/data/S3_PORT", "value": "'$(echo -n "443" | base64)'"},
+  {"op": "add", "path": "/data/S3_USE_SSL", "value": "'$(echo -n "true" | base64)'"},
+  {"op": "add", "path": "/data/S3_ACCESS_KEY", "value": "'$(echo -n "your-key" | base64)'"},
+  {"op": "add", "path": "/data/S3_SECRET_KEY", "value": "'$(echo -n "your-secret" | base64)'"},
+  {"op": "add", "path": "/data/S3_BUCKET", "value": "'$(echo -n "bucket-name" | base64)'"},
+  {"op": "add", "path": "/data/S3_PUBLIC_URL", "value": "'$(echo -n "https://s3.amazonaws.com/bucket" | base64)'"}
+]'
 ```
 
 ### Using Helm Directly

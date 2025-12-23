@@ -87,10 +87,12 @@ spec:
               key: root-password
         {{- end }}
 
-        # Additional secrets (HANDY_MASTER_SECRET, external S3, etc.) from external secret
-        {{- with .Values.envFrom }}
+        # Auto-generated secret (HANDY_MASTER_SECRET) + optional additional secrets
         envFrom:
-          {{- toYaml . | nindent 10 }}
+        - secretRef:
+            name: {{ include "happy-server.fullname" . }}-secrets
+        {{- with .Values.envFrom }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
 
         {{- if .Values.livenessProbe }}
