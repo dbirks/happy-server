@@ -180,7 +180,7 @@ redis:
 # MinIO dependency configuration (Bitnami chart for S3-compatible storage)
 # ============================================================================
 minio:
-  enabled: true
+  enabled: false
 
   auth:
     rootUser: admin
