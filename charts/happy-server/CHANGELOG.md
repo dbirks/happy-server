@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.3...happy-server-chart-v0.1.4) (2025-12-23)
+
+
+### Bug Fixes
+
+* **chart:** only set S3 env vars when MinIO is enabled ([67dd281](https://github.com/dbirks/happy-server/commit/67dd281c83acb58243b4db5a97c8b6d75aff22ba))
+
 ## [0.1.3](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.2...happy-server-chart-v0.1.3) (2025-12-23)
 
 
