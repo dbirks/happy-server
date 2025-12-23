@@ -1,0 +1,168 @@
+# Default values for happy-server
+
+# -- Global settings
+global:
+  imagePullSecrets: []
+
+# -- Image configuration
+image:
+  # -- Container image repository
+  repository: ghcr.io/dbirks/happy-server
+  # -- Image pull policy
+  pullPolicy: IfNotPresent
+  # -- Overrides the image tag (defaults to chart appVersion)
+  tag: ""
+
+# -- Number of replicas
+replicaCount: 2
+
+# -- Service account configuration
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+# -- Pod security context
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 1000
+  fsGroup: 2000
+  seccompProfile:
+    type: RuntimeDefault
+
+# -- Container security context
+securityContext:
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+  capabilities:
+    drop:
+      - ALL
+
+# -- Service configuration
+service:
+  type: ClusterIP
+  port: 80  # Exposed port in cluster
+  targetPort: 3005  # Container port
+
+# -- Resource requests and limits
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+# -- Liveness probe
+livenessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+# -- Readiness probe
+readinessProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 3
+
+# -- Startup probe (for slow-starting containers)
+startupProbe:
+  httpGet:
+    path: /health
+    port: http
+  initialDelaySeconds: 0
+  periodSeconds: 5
+  timeoutSeconds: 3
+  failureThreshold: 30
+
+# -- Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# -- Application configuration
+config:
+  logLevel: "info"
+  port: "3005"
+
+# -- Environment variables from secrets
+envFrom:
+  - secretRef:
+      name: happy-server-secrets  # Create this manually or via ExternalSecrets
+
+# ============================================================================
+# PostgreSQL dependency configuration (Bitnami chart with DHI image override)
+# ============================================================================
+postgresql:
+  enabled: true
+
+  # OVERRIDE: Use Alpine images instead of Bitnami images
+  image:
+    registry: docker.io
+    repository: postgres
+    tag: "17-alpine"
+    pullPolicy: IfNotPresent
+
+  auth:
+    username: happy_server
+    database: happy_server
+    # Password will be auto-generated and stored in secret
+    # existingSecret: happy-server-postgresql  # Optional: use existing secret
+
+  primary:
+    persistence:
+      enabled: true
+      size: 10Gi
+      # storageClass: ""  # Use default storage class
+
+    resources:
+      limits:
+        cpu: 500m
+        memory: 512Mi
+      requests:
+        cpu: 100m
+        memory: 256Mi
+
+# ============================================================================
+# Redis dependency configuration (Bitnami chart with DHI image override)
+# ============================================================================
+redis:
+  enabled: true
+
+  # OVERRIDE: Use Alpine images instead of Bitnami images
+  image:
+    registry: docker.io
+    repository: redis
+    tag: "7-alpine"
+    pullPolicy: IfNotPresent
+
+  auth:
+    enabled: true
+    # Password will be auto-generated
+    # existingSecret: happy-server-redis  # Optional: use existing secret
+
+  master:
+    persistence:
+      enabled: true
+      size: 1Gi
+
+    resources:
+      limits:
+        cpu: 250m
+        memory: 256Mi
+      requests:
+        cpu: 50m
+        memory: 128Mi
+
+  replica:
+    replicaCount: 0  # Single instance for self-hosted
