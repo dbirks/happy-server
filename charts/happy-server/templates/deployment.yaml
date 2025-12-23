@@ -44,26 +44,46 @@ spec:
         - name: METRICS_PORT
           value: {{ .Values.config.metricsPort | quote }}
 
-        # Database URL (from PostgreSQL subchart or external)
-        - name: DATABASE_URL
-          value: {{ include "happy-server.databaseUrl" . | quote }}
         {{- if .Values.postgresql.enabled }}
+        # Database component env vars (must be defined before DATABASE_URL for $(VAR) substitution)
+        - name: POSTGRES_USER
+          value: {{ .Values.postgresql.auth.username | quote }}
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ include "happy-server.fullname" . }}-postgresql
               key: password
+        - name: POSTGRES_HOST
+          value: {{ printf "%s-postgresql" (include "happy-server.fullname" .) | quote }}
+        - name: POSTGRES_DB
+          value: {{ .Values.postgresql.auth.database | quote }}
+        # DATABASE_URL constructed using Kubernetes $(VAR) substitution
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):5432/$(POSTGRES_DB)"
+        {{- else }}
+        # External database
+        - name: DATABASE_URL
+          value: {{ .Values.externalDatabase.url | quote }}
         {{- end }}
 
-        # Redis URL (from Redis subchart or external)
-        - name: REDIS_URL
-          value: {{ include "happy-server.redisUrl" . | quote }}
-        {{- if and .Values.redis.enabled .Values.redis.auth.enabled }}
+        {{- if .Values.redis.enabled }}
+        # Redis configuration (from Redis subchart)
+        {{- if .Values.redis.auth.enabled }}
         - name: REDIS_PASSWORD
           valueFrom:
             secretKeyRef:
               name: {{ include "happy-server.fullname" . }}-redis
               key: redis-password
+        - name: REDIS_URL
+          value: "redis://:$(REDIS_PASSWORD)@{{ include "happy-server.fullname" . }}-redis-master:6379"
+        {{- else }}
+        - name: REDIS_URL
+          value: "redis://{{ include "happy-server.fullname" . }}-redis-master:6379"
+        {{- end }}
+        {{- else }}
+        # External Redis
+        - name: REDIS_URL
+          value: {{ .Values.externalRedis.url | quote }}
         {{- end }}
 
         # S3/MinIO configuration (from MinIO subchart or external)
