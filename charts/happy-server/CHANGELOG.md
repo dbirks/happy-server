@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.0...happy-server-chart-v0.1.1) (2025-12-23)
+
+
+### Bug Fixes
+
+* **chart:** remove whitespace from template helper outputs ([3226840](https://github.com/dbirks/happy-server/commit/3226840f9dcd4299323ca82b096b677d5889c2dc))
+
 ## [0.1.0](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.0.1...happy-server-chart-v0.1.0) (2025-12-23)
 
 
