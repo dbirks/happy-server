@@ -71,67 +71,67 @@ Return the proper image name
 Database URL (constructed from PostgreSQL subchart)
 */}}
 {{- define "happy-server.databaseUrl" -}}
-{{- if .Values.postgresql.enabled }}
+{{- if .Values.postgresql.enabled -}}
 postgresql://{{ .Values.postgresql.auth.username }}:$(POSTGRES_PASSWORD)@{{ include "happy-server.fullname" . }}-postgresql:5432/{{ .Values.postgresql.auth.database }}
-{{- else }}
+{{- else -}}
 $(DATABASE_URL)
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 
 {{/*
 Redis URL (constructed from Redis subchart)
 */}}
 {{- define "happy-server.redisUrl" -}}
-{{- if .Values.redis.enabled }}
-{{- if .Values.redis.auth.enabled }}
+{{- if .Values.redis.enabled -}}
+{{- if .Values.redis.auth.enabled -}}
 redis://:$(REDIS_PASSWORD)@{{ include "happy-server.fullname" . }}-redis-master:6379
-{{- else }}
+{{- else -}}
 redis://{{ include "happy-server.fullname" . }}-redis-master:6379
-{{- end }}
-{{- else }}
+{{- end -}}
+{{- else -}}
 $(REDIS_URL)
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 
 {{/*
 S3/MinIO configuration helpers
 */}}
 {{- define "happy-server.s3Host" -}}
-{{- if .Values.minio.enabled }}
+{{- if .Values.minio.enabled -}}
 {{ include "happy-server.fullname" . }}-minio
-{{- else }}
+{{- else -}}
 $(S3_HOST)
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 
 {{- define "happy-server.s3Port" -}}
-{{- if .Values.minio.enabled }}
+{{- if .Values.minio.enabled -}}
 9000
-{{- else }}
+{{- else -}}
 $(S3_PORT)
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 
 {{- define "happy-server.s3UseSsl" -}}
-{{- if .Values.minio.enabled }}
+{{- if .Values.minio.enabled -}}
 false
-{{- else }}
+{{- else -}}
 $(S3_USE_SSL)
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 
 {{- define "happy-server.s3Bucket" -}}
-{{- if .Values.minio.enabled }}
+{{- if .Values.minio.enabled -}}
 {{ .Values.minio.defaultBuckets }}
-{{- else }}
+{{- else -}}
 $(S3_BUCKET)
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
 
 {{- define "happy-server.s3PublicUrl" -}}
-{{- if .Values.minio.enabled }}
+{{- if .Values.minio.enabled -}}
 http://{{ include "happy-server.fullname" . }}-minio:9000/{{ .Values.minio.defaultBuckets }}
-{{- else }}
+{{- else -}}
 $(S3_PUBLIC_URL)
-{{- end }}
-{{- end }}
+{{- end -}}
+{{- end -}}
