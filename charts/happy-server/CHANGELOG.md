@@ -1,0 +1,11 @@
+# Changelog
+
+## [0.1.0](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.0.1...happy-server-chart-v0.1.0) (2025-12-23)
+
+
+### Features
+
+* add deployment infrastructure with Helm chart and GitHub Actions ([aaf5292](https://github.com/dbirks/happy-server/commit/aaf52921ba291de064329c1a29ad3e38030bd5bb))
+* **chart:** add metrics config and document required secrets ([d1aac33](https://github.com/dbirks/happy-server/commit/d1aac3354f2f1557e86d9400ce04a3ad199ff8c5))
+* **chart:** add MinIO subchart for S3-compatible object storage ([30c1b69](https://github.com/dbirks/happy-server/commit/30c1b6942c3124895f37aada5e66d5f2aba10edb))
+* **chart:** auto-generate HANDY_MASTER_SECRET with persistence ([9b7680e](https://github.com/dbirks/happy-server/commit/9b7680eefe614767608a410ca200013ed9888d8b))
