@@ -92,3 +92,46 @@ redis://{{ include "happy-server.fullname" . }}-redis-master:6379
 $(REDIS_URL)
 {{- end }}
 {{- end }}
+
+{{/*
+S3/MinIO configuration helpers
+*/}}
+{{- define "happy-server.s3Host" -}}
+{{- if .Values.minio.enabled }}
+{{ include "happy-server.fullname" . }}-minio
+{{- else }}
+$(S3_HOST)
+{{- end }}
+{{- end }}
+
+{{- define "happy-server.s3Port" -}}
+{{- if .Values.minio.enabled }}
+9000
+{{- else }}
+$(S3_PORT)
+{{- end }}
+{{- end }}
+
+{{- define "happy-server.s3UseSsl" -}}
+{{- if .Values.minio.enabled }}
+false
+{{- else }}
+$(S3_USE_SSL)
+{{- end }}
+{{- end }}
+
+{{- define "happy-server.s3Bucket" -}}
+{{- if .Values.minio.enabled }}
+{{ .Values.minio.defaultBuckets }}
+{{- else }}
+$(S3_BUCKET)
+{{- end }}
+{{- end }}
+
+{{- define "happy-server.s3PublicUrl" -}}
+{{- if .Values.minio.enabled }}
+http://{{ include "happy-server.fullname" . }}-minio:9000/{{ .Values.minio.defaultBuckets }}
+{{- else }}
+$(S3_PUBLIC_URL)
+{{- end }}
+{{- end }}

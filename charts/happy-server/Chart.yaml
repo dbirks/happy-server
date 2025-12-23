@@ -20,7 +20,7 @@ home: https://github.com/dbirks/happy-server
 sources:
   - https://github.com/dbirks/happy-server
 
-# Use frozen Bitnami charts with DHI image overrides
+# Use frozen Bitnami charts
 dependencies:
   - name: postgresql
     version: "12.12.10"  # Last Bitnami version before freeze
@@ -35,3 +35,10 @@ dependencies:
     condition: redis.enabled
     tags:
       - cache
+
+  - name: minio
+    version: "17.0.21"  # Bitnami frozen archive version
+    repository: https://charts.bitnami.com/bitnami
+    condition: minio.enabled
+    tags:
+      - storage

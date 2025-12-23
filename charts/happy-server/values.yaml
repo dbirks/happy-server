@@ -98,18 +98,19 @@ config:
   metricsPort: "9090"
 
 # -- Environment variables from secrets
-# Create a secret with the following keys:
+# MinIO is enabled by default and provides S3-compatible storage
+# If using external S3 instead, set minio.enabled=false and create a secret with:
 #   HANDY_MASTER_SECRET: Encryption key for secure operations (REQUIRED)
-#   S3_HOST: S3-compatible storage host (e.g., s3.amazonaws.com or minio.example.com)
-#   S3_PORT: S3 port (default: 443 for AWS, 9000 for MinIO)
+#   S3_HOST: S3-compatible storage host (e.g., s3.amazonaws.com)
+#   S3_PORT: S3 port (default: 443 for AWS)
 #   S3_USE_SSL: "true" or "false"
 #   S3_ACCESS_KEY: S3 access key
 #   S3_SECRET_KEY: S3 secret key
 #   S3_BUCKET: S3 bucket name
-#   S3_PUBLIC_URL: Public URL for S3 bucket (e.g., https://s3.amazonaws.com/bucket-name)
+#   S3_PUBLIC_URL: Public URL for S3 bucket
 envFrom:
   - secretRef:
-      name: happy-server-secrets  # Create this manually or via ExternalSecrets
+      name: happy-server-secrets  # Create with at minimum: HANDY_MASTER_SECRET
 
 # ============================================================================
 # PostgreSQL dependency configuration (Bitnami chart with DHI image override)
@@ -177,3 +178,31 @@ redis:
 
   replica:
     replicaCount: 0  # Single instance for self-hosted
+
+# ============================================================================
+# MinIO dependency configuration (Bitnami chart for S3-compatible storage)
+# ============================================================================
+minio:
+  enabled: true
+
+  auth:
+    rootUser: admin
+    rootPassword: minio123
+    # For production, use existing secret:
+    # existingSecret: happy-server-minio
+
+  mode: standalone  # Use standalone for simple deployments
+
+  persistence:
+    enabled: true
+    size: 10Gi
+
+  defaultBuckets: "happy"
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 256Mi

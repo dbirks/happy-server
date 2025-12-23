@@ -13,15 +13,17 @@ Modern deployment setup for happy-server using Docker Hardened Images and Helm.
 
 ### ⚓ Helm Chart
 - **Location**: `charts/happy-server/`
-- **Dependencies**: Frozen Bitnami charts with Alpine image overrides
+- **Dependencies**: Frozen Bitnami charts with Alpine image overrides (PostgreSQL/Redis)
   - PostgreSQL 17 (`postgres:17-alpine`)
   - Redis 7 (`redis:7-alpine`)
+  - MinIO (S3-compatible object storage) - uses official Bitnami image
 - **Features**:
   - Security contexts (runAsNonRoot, readOnlyRootFilesystem)
   - Resource limits and requests
   - Liveness/readiness/startup probes
   - PodDisruptionBudget for HA
   - Service exposes port 80 → container port 3005
+  - Built-in S3-compatible storage via MinIO subchart
 
 ### 🚀 CI/CD Pipelines
 - **Release Please**: Automated versioning via conventional commits
@@ -138,10 +140,14 @@ spec:
 
 **3. Create required secrets:**
 ```bash
-# Generate a secure master secret
+# MinIO is enabled by default, so you only need HANDY_MASTER_SECRET
 MASTER_SECRET=$(openssl rand -base64 32)
 
-# Create the secret with all required values
+kubectl create secret generic happy-server-secrets \
+  --from-literal=HANDY_MASTER_SECRET="$MASTER_SECRET" \
+  -n default
+
+# Or if using external S3 instead (set minio.enabled=false):
 kubectl create secret generic happy-server-secrets \
   --from-literal=HANDY_MASTER_SECRET="$MASTER_SECRET" \
   --from-literal=S3_HOST=s3.amazonaws.com \
@@ -151,18 +157,6 @@ kubectl create secret generic happy-server-secrets \
   --from-literal=S3_SECRET_KEY=your-secret-key \
   --from-literal=S3_BUCKET=happy-server-uploads \
   --from-literal=S3_PUBLIC_URL=https://s3.amazonaws.com/happy-server-uploads \
-  -n default
-
-# Or for MinIO (self-hosted S3):
-kubectl create secret generic happy-server-secrets \
-  --from-literal=HANDY_MASTER_SECRET="$MASTER_SECRET" \
-  --from-literal=S3_HOST=minio.example.com \
-  --from-literal=S3_PORT=9000 \
-  --from-literal=S3_USE_SSL=false \
-  --from-literal=S3_ACCESS_KEY=minioadmin \
-  --from-literal=S3_SECRET_KEY=minioadmin \
-  --from-literal=S3_BUCKET=happy \
-  --from-literal=S3_PUBLIC_URL=http://minio.example.com:9000/happy \
   -n default
 ```
 
@@ -270,6 +264,16 @@ redis:
   master:
     persistence:
       size: 1Gi
+
+# MinIO (bundled S3-compatible storage)
+minio:
+  enabled: true
+  auth:
+    rootUser: admin
+    rootPassword: minio123  # Change for production!
+  persistence:
+    size: 10Gi
+  defaultBuckets: "happy"
 ```
 
 ## Troubleshooting
