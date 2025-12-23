@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.2...happy-server-chart-v0.1.3) (2025-12-23)
+
+
+### Bug Fixes
+
+* **chart:** disable MinIO by default to reduce deployment complexity ([5a83ef2](https://github.com/dbirks/happy-server/commit/5a83ef2ae832289f94d50f430566668aa0b0fb50))
+
 ## [0.1.2](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.1...happy-server-chart-v0.1.2) (2025-12-23)
 
 
