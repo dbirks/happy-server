@@ -1,9 +1,10 @@
 apiVersion: v2
 name: happy-server
-description: A Helm chart for Happy Server - the synchronization backbone for secure Claude Code clients
+description: A Helm chart for Happy Server - the synchronization backbone for
+  secure Claude Code clients
 type: application
-version: 0.0.0  # Managed by release-please
-appVersion: "0.0.0"  # Managed by release-please
+version: 0.1.0 # Managed by release-please
+appVersion: "0.0.0" # Managed by release-please
 
 maintainers:
   - name: David Birks
@@ -23,21 +24,21 @@ sources:
 # Use frozen Bitnami charts
 dependencies:
   - name: postgresql
-    version: "12.12.10"  # Last Bitnami version before freeze
+    version: "12.12.10" # Last Bitnami version before freeze
     repository: https://charts.bitnami.com/bitnami
     condition: postgresql.enabled
     tags:
       - database
 
   - name: redis
-    version: "18.19.4"  # Last Bitnami version before freeze
+    version: "18.19.4" # Last Bitnami version before freeze
     repository: https://charts.bitnami.com/bitnami
     condition: redis.enabled
     tags:
       - cache
 
   - name: minio
-    version: "17.0.21"  # Bitnami frozen archive version
+    version: "17.0.21" # Bitnami frozen archive version
     repository: https://charts.bitnami.com/bitnami
     condition: minio.enabled
     tags:
