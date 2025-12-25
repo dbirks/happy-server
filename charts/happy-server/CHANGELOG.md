@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.4...happy-server-chart-v0.2.0) (2025-12-25)
+
+
+### Features
+
+* **chart:** add init container for database migrations ([ab155ca](https://github.com/dbirks/happy-server/commit/ab155cabb9847b08b30cbd4a5e090d533fc5206b))
+
 ## [0.1.4](https://github.com/dbirks/happy-server/compare/happy-server-chart-v0.1.3...happy-server-chart-v0.1.4) (2025-12-23)
 
 
