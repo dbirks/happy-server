@@ -21,6 +21,46 @@ spec:
       serviceAccountName: {{ include "happy-server.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+      - name: migrate
+        image: {{ include "happy-server.image" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["npx", "prisma", "migrate", "deploy"]
+        env:
+        {{- if .Values.postgresql.enabled }}
+        # Database component env vars (must be defined before DATABASE_URL for $(VAR) substitution)
+        - name: POSTGRES_USER
+          value: {{ .Values.postgresql.auth.username | quote }}
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "happy-server.fullname" . }}-postgresql
+              key: password
+        - name: POSTGRES_HOST
+          value: {{ printf "%s-postgresql" (include "happy-server.fullname" .) | quote }}
+        - name: POSTGRES_DB
+          value: {{ .Values.postgresql.auth.database | quote }}
+        # DATABASE_URL constructed using Kubernetes $(VAR) substitution
+        - name: DATABASE_URL
+          value: "postgresql://$(POSTGRES_USER):$(POSTGRES_PASSWORD)@$(POSTGRES_HOST):5432/$(POSTGRES_DB)"
+        {{- else }}
+        # External database
+        - name: DATABASE_URL
+          value: {{ .Values.externalDatabase.url | quote }}
+        {{- end }}
+        volumeMounts:
+        - name: tmp
+          mountPath: /tmp
+        - name: cache
+          mountPath: /app/.cache
+        securityContext:
+          allowPrivilegeEscalation: false
+          readOnlyRootFilesystem: true
+          runAsNonRoot: true
+          runAsUser: 1000
+          capabilities:
+            drop:
+              - ALL
       containers:
       - name: {{ .Chart.Name }}
         securityContext:
